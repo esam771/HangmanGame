@@ -97,7 +97,9 @@ public class HangmanGame {
 				addGuess(guess);
 				solved = isSolved();
 			}
-			printCurrent(choice); //printing after guess is checked
+			
+			if(!solved)
+				printCurrent(choice); //printing after guess is checked
 		}
 		
 		scan.close();
