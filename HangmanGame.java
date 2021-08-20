@@ -17,8 +17,9 @@ public class HangmanGame {
 	public String[] ansarr = new String[200];
 	public String[] blankarr = new String[200];
 	public String[] guessed = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-								"", "", "", "", "", "", "", "", "", "", };
-	public int guessedindex = 1;
+								"", "", "", "", "", "", "", "", "", "","", "", "", "", "", ""}; //not null because .compareTo
+	
+	public int guessedindex = 1; //starting a 1, not 0, to compare a value to whats before it
 	
 	public static void main(String[] args) {
 
@@ -41,7 +42,6 @@ public class HangmanGame {
 		}
 		
 		gamemode.close();
-
 	}
 	
 	public void hangman(int choice)
@@ -49,31 +49,31 @@ public class HangmanGame {
 		int errors = 0;
 		boolean solved = false; 
 		
-		answerarray(choice); //populates arrays with answer string
-		blankarray(choice);
+		answerArray(choice); //populates arrays with answer string
+		blankArray(choice);
 		
 		
-		System.out.println("\n#" + (choice + 1) + " chosen");
-		printCurrent(choice);
+		System.out.println("\n#" + (choice + 1) + " chosen"); //tells you which term chosen
+		printCurrent(choice); //shows blanks of chosen term
 		
-		Scanner scan = new Scanner(System.in);
+		Scanner scan = new Scanner(System.in); //scanner that accepts guesses and puts into 'String guess'
 		String guess = "";
 		
 
-		while(errors < 11 && !solved )
+		while(errors < 11 && !solved ) //loops until ends
 		{
-			System.out.println("\nEnter Guess, Already guessed: ");
+			System.out.println("\nEnter Full Guess or Single Letter");
+			System.out.println("Already guessed: ");
 			
-			for(int i = 0; i < guessed.length; i++) //printing out already guessed nums
+			for(int i = 1; i < guessed.length; i++) //printing out past guesses, doesn't look at unused index 0
 			{
-				if(guessed[i] == "" && i != 0)
+				if(guessed[i] == "") //after last filled index reached
 					break;
-				
-				if(guessed[i] != null && guessed[i].compareTo("") != 0)
+				else if(guessed[i].compareTo("") != 0) //to print previous guesses
 					System.out.print(guessed[i] + ", ");
 				
-				if(i == 8 || i == 16 || i == 24) //makes new line if many guesses
-					System.out.println("yo");
+				if((i + 1) % 7 == 0) //formatting a new line if many guesses
+					System.out.println();
 			}
 			
 			System.out.println("\n*"+"\n*"+"\n*"+"\n*"); 
@@ -98,42 +98,35 @@ public class HangmanGame {
 				solved = isSolved();
 			}
 			
-			if(!solved)
+			if(!solved) //prints progress if not solved
 				printCurrent(choice); //printing after guess is checked
 		}
 		
-		scan.close();
+		scan.close(); //no more need to accept guesses
 		
-		if(solved) //print for correct solution
-		{
-			System.out.println("\n*************************************");
+		if(solved){ //print for correct solution
+			System.out.println("*************************************");
 			System.out.println("**********==================*********");
 			System.out.println("*********|| Puzzle Solved ||*********");
 			System.out.println("**********==================*********");
 			System.out.println("*************************************");
-		}
-		else
-		{
+		} else { //prints for puzzle failure
 			System.out.println("\n\n\n11 Errors Made, Puzzle Failed");
 			System.out.println("Correct Answer: \n\"" + answers[choice] + "\"");
-			
-			
 		}
 	}
 	
 
 	
-	public void answerarray(int choice)
+	public void answerArray(int choice)
 	{
-		//used to put chosen words into global unsolved or solved array
-	
-			ansarr = answers[choice].split("");
+		//used to put chosen words into globalsolved array, required for blankArray()
+		ansarr = answers[choice].split("");
 	}	
 	
-	public void blankarray(int choice)
+	public void blankArray(int choice)
 	{
-			//returning blank array
-			
+			//returning blank array from answer array, needs answerArray() to be used first
 			for(int i = 0; i < ansarr.length; i++)
 			{
 				if(ansarr[i].compareTo(" ") == 0)
@@ -149,7 +142,7 @@ public class HangmanGame {
 	{
 		//prints changing and originally unsolved array
 		
-		System.out.println("\n");
+		System.out.println("\n"); //formatting to print progress on new line
 		
 		for(int i = 0; i < blankarr.length; i++)
 		{
@@ -169,7 +162,7 @@ public class HangmanGame {
 		for(int i = 0; i < ansarr.length; i++)
 			if(guess.compareTo(ansarr[i]) == 0)
 				return 1;
-
+		
 		return -1;
 	}
 	
@@ -178,19 +171,18 @@ public class HangmanGame {
 		//puts correct guess into guessed array and changes blank for progression
 		for(int i = 0; i < ansarr.length; i++)
 		{
-			if(guess.compareTo(ansarr[i]) == 0)
+			if(guess.compareTo(ansarr[i]) == 0) //when guess is correct at index of i
 			{
-				blankarr[i] = guess;
+				blankarr[i] = guess; //changes blankarr to include correct guess
 			}
 			else
 			{
-				if(guess.compareTo(guessed[guessedindex-1]) != 0)
+				if(guess.compareTo(guessed[guessedindex-1]) != 0) //adding incorrect guesses
 				{
 					guessed[guessedindex] = guess;
 					guessedindex++;
 				}
 			}
-			//System.out.print(blankarr[i]);
 		}
 	}
 	
@@ -199,12 +191,12 @@ public class HangmanGame {
 		//checks if unsolved array has been fully changed
 		for(int i = 0; i < blankarr.length; i++)
 			{
-			if(blankarr[i] == null) //can't .compareto null so skips
+			if(blankarr[i] == null) //breaks out of checking null indexes
 				break;
 			
 			if(blankarr[i].compareTo(ansarr[i]) != 0)
-				return false; //if a difference is found before nulls
+				return false; //if a difference is found before nulls, not solved
 			}
-		return true;
+		return true; //if not stopped before here, then puzzle is solved
 	}
 }
